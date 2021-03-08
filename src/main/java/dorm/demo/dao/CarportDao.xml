@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dorm.demo.dao.CarportDao">
+
+    <resultMap type="dorm.demo.entity.Carport" id="CarportResultMap">
+        <result property="carno" column="carno" jdbcType="VARCHAR"/>
+        <result property="portno" column="portno" jdbcType="VARCHAR"/>
+        <result property="dormno" column="dormno" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="list" resultMap="CarportResultMap">
+        select * from   carport
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+
+    </select>
+    <select id="total" resultType="int">
+        select count(*) from carport
+    </select>
+
+
+    <sql id="table_field">
+      carno, portno, dormno      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="CarportResultMap" parameterType="java.lang.String">
+        select
+          <include refid="table_field" />
+        from carport
+        where portno = #{portno,jdbcType=VARCHAR}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="CarportResultMap" parameterType="dorm.demo.entity.Carport">
+        select
+          <include refid="table_field" />
+        from carport
+        <where>
+            <if test="carno != null">
+                and carno = #{carno,jdbcType=VARCHAR}
+            </if>
+            <if test="portno != null">
+                and portno = #{portno,jdbcType=VARCHAR}
+            </if>
+            <if test="dormno != null">
+                and dormno = #{dormno,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="CarportResultMap" parameterType="dorm.demo.entity.Carport">
+        select
+          <include refid="table_field" />
+        from carport
+        <where>
+            <if test="carno != null">
+                and carno = #{carno,jdbcType=VARCHAR}
+            </if>
+            <if test="portno != null">
+                and portno = #{portno,jdbcType=VARCHAR}
+            </if>
+            <if test="dormno != null">
+                and dormno = #{dormno,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="CarportResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from carport
+        where portno in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="portno" useGeneratedKeys="true" parameterType="dorm.demo.entity.Carport">
+        insert into carport
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="carno != null">
+             carno,
+          </if>
+          <if test="portno != null">
+             portno,
+          </if>
+          <if test="dormno != null">
+             dormno,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="carno != null">
+             #{carno,jdbcType=VARCHAR},
+          </if>
+          <if test="portno != null">
+             #{portno,jdbcType=VARCHAR},
+          </if>
+          <if test="dormno != null">
+             #{dormno,jdbcType=VARCHAR},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="portno" useGeneratedKeys="true" parameterType="list">
+        insert into carport
+         (carno, portno, dormno)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.carno}, #{item.portno}, #{item.dormno})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="dorm.demo.entity.Carport">
+        update carport
+        <set>
+            <if test="carno != null and carno != ''">
+                carno = #{carno,jdbcType=VARCHAR},
+            </if>
+            <if test="dormno != null and dormno != ''">
+                dormno = #{dormno,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where portno = #{portno,jdbcType=VARCHAR}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update carport
+        <set>
+            <if test="where.carno == null and set.carno != null and set.carno != ''">
+                carno = #{set.carno,jdbcType=VARCHAR},
+            </if>
+            <if test="where.dormno == null and set.dormno != null and set.dormno != ''">
+                dormno = #{set.dormno,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="where.carno != null">
+                and carno = #{where.carno,jdbcType=VARCHAR}
+            </if>
+            <if test="where.portno != null">
+                and portno = #{where.portno,jdbcType=VARCHAR}
+            </if>
+            <if test="where.dormno != null">
+                and dormno = #{where.dormno,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update carport
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="carno = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when portno = #{item.portno} then #{item.carno}
+                 </foreach>
+            </trim>
+            <trim prefix="dormno = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when portno = #{item.portno} then #{item.dormno}
+                 </foreach>
+            </trim>
+        </trim>
+        where portno in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.portno,jdbcType=VARCHAR}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.String">
+        delete from carport where portno = #{portno,jdbcType=VARCHAR}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="dorm.demo.entity.Carport">
+        delete from carport
+        <where>
+            <if test="carno != null">
+                and carno = #{carno,jdbcType=VARCHAR}
+            </if>
+            <if test="dormno != null">
+                and dormno = #{dormno,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from carport where portno in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(*) from carport
+    </select>
+    
+    <select id="countByEntity" parameterType="dorm.demo.entity.Carport" resultType="int">
+        select count(*) from carport
+        <where>
+            <if test="carno != null">
+                and carno = #{carno,jdbcType=VARCHAR}
+            </if>
+            <if test="portno != null">
+                and portno = #{portno,jdbcType=VARCHAR}
+            </if>
+            <if test="dormno != null">
+                and dormno = #{dormno,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dorm.demo.dao.ElvDao">
+
+    <resultMap type="dorm.demo.entity.Elv" id="ElvResultMap">
+        <result property="no" column="no" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="brand" column="brand" jdbcType="VARCHAR"/>
+        <result property="stauts" column="stauts" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="table_field">
+      no, address, brand, stauts      
+    </sql>
+
+
+    <select id="list" resultMap="ElvResultMap">
+        select * from   elv
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+
+    </select>
+    <select id="total" resultType="int">
+        select count(*) from elv
+    </select>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="ElvResultMap" parameterType="java.lang.String">
+        select
+          <include refid="table_field" />
+        from elv
+        where no = #{no,jdbcType=VARCHAR}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="ElvResultMap" parameterType="dorm.demo.entity.Elv">
+        select
+          <include refid="table_field" />
+        from elv
+        <where>
+            <if test="no != null">
+                and no = #{no,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="brand != null">
+                and brand = #{brand,jdbcType=VARCHAR}
+            </if>
+            <if test="stauts != null">
+                and stauts = #{stauts,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="ElvResultMap" parameterType="dorm.demo.entity.Elv">
+        select
+          <include refid="table_field" />
+        from elv
+        <where>
+            <if test="no != null">
+                and no = #{no,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="brand != null">
+                and brand = #{brand,jdbcType=VARCHAR}
+            </if>
+            <if test="stauts != null">
+                and stauts = #{stauts,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="ElvResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from elv
+        where no in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="no" useGeneratedKeys="true" parameterType="dorm.demo.entity.Elv">
+        insert into elv
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="no != null">
+             no,
+          </if>
+          <if test="address != null">
+             address,
+          </if>
+          <if test="brand != null">
+             brand,
+          </if>
+          <if test="stauts != null">
+             stauts,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="no != null">
+             #{no,jdbcType=VARCHAR},
+          </if>
+          <if test="address != null">
+             #{address,jdbcType=VARCHAR},
+          </if>
+          <if test="brand != null">
+             #{brand,jdbcType=VARCHAR},
+          </if>
+          <if test="stauts != null">
+             #{stauts,jdbcType=VARCHAR},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="no" useGeneratedKeys="true" parameterType="list">
+        insert into elv
+         (no, address, brand, stauts)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.no}, #{item.address}, #{item.brand}, #{item.stauts})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="dorm.demo.entity.Elv">
+        update elv
+        <set>
+            <if test="address != null and address != ''">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="brand != null and brand != ''">
+                brand = #{brand,jdbcType=VARCHAR},
+            </if>
+            <if test="stauts != null and stauts != ''">
+                stauts = #{stauts,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where no = #{no,jdbcType=VARCHAR}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update elv
+        <set>
+            <if test="where.address == null and set.address != null and set.address != ''">
+                address = #{set.address,jdbcType=VARCHAR},
+            </if>
+            <if test="where.brand == null and set.brand != null and set.brand != ''">
+                brand = #{set.brand,jdbcType=VARCHAR},
+            </if>
+            <if test="where.stauts == null and set.stauts != null and set.stauts != ''">
+                stauts = #{set.stauts,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="where.no != null">
+                and no = #{where.no,jdbcType=VARCHAR}
+            </if>
+            <if test="where.address != null">
+                and address = #{where.address,jdbcType=VARCHAR}
+            </if>
+            <if test="where.brand != null">
+                and brand = #{where.brand,jdbcType=VARCHAR}
+            </if>
+            <if test="where.stauts != null">
+                and stauts = #{where.stauts,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update elv
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="address = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when no = #{item.no} then #{item.address}
+                 </foreach>
+            </trim>
+            <trim prefix="brand = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when no = #{item.no} then #{item.brand}
+                 </foreach>
+            </trim>
+            <trim prefix="stauts = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when no = #{item.no} then #{item.stauts}
+                 </foreach>
+            </trim>
+        </trim>
+        where no in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.no,jdbcType=VARCHAR}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.String">
+        delete from elv where no = #{no,jdbcType=VARCHAR}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="dorm.demo.entity.Elv">
+        delete from elv
+        <where>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="brand != null">
+                and brand = #{brand,jdbcType=VARCHAR}
+            </if>
+            <if test="stauts != null">
+                and stauts = #{stauts,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from elv where no in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(*) from elv
+    </select>
+    
+    <select id="countByEntity" parameterType="dorm.demo.entity.Elv" resultType="int">
+        select count(*) from elv
+        <where>
+            <if test="no != null">
+                and no = #{no,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="brand != null">
+                and brand = #{brand,jdbcType=VARCHAR}
+            </if>
+            <if test="stauts != null">
+                and stauts = #{stauts,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dorm.demo.dao.PropertyDao">
+
+    <resultMap type="dorm.demo.entity.Property" id="PropertyResultMap">
+        <result property="dormno" column="dormno" jdbcType="VARCHAR"/>
+        <result property="waterbill" column="waterbill" jdbcType="VARCHAR"/>
+        <result property="elcbill" column="elcbill" jdbcType="VARCHAR"/>
+        <result property="gassbill" column="gassbill" jdbcType="VARCHAR"/>
+        <result property="property" column="Property" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="table_field">
+      dormno, waterbill, elcbill, gassbill, Property, status      
+    </sql>
+
+    <select id="list" resultMap="PropertyResultMap">
+        select * from   property
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+
+    </select>
+    <select id="total" resultType="int">
+        select count(*) from property
+    </select>
+
+
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="PropertyResultMap" parameterType="java.lang.String">
+        select
+          <include refid="table_field" />
+        from property
+        where dormno = #{dormno,jdbcType=VARCHAR}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="PropertyResultMap" parameterType="dorm.demo.entity.Property">
+        select
+          <include refid="table_field" />
+        from property
+        <where>
+            <if test="dormno != null">
+                and dormno = #{dormno,jdbcType=VARCHAR}
+            </if>
+            <if test="waterbill != null">
+                and waterbill = #{waterbill,jdbcType=VARCHAR}
+            </if>
+            <if test="elcbill != null">
+                and elcbill = #{elcbill,jdbcType=VARCHAR}
+            </if>
+            <if test="gassbill != null">
+                and gassbill = #{gassbill,jdbcType=VARCHAR}
+            </if>
+            <if test="property != null">
+                and Property = #{property,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="PropertyResultMap" parameterType="dorm.demo.entity.Property">
+        select
+          <include refid="table_field" />
+        from property
+        <where>
+            <if test="dormno != null">
+                and dormno = #{dormno,jdbcType=VARCHAR}
+            </if>
+            <if test="waterbill != null">
+                and waterbill = #{waterbill,jdbcType=VARCHAR}
+            </if>
+            <if test="elcbill != null">
+                and elcbill = #{elcbill,jdbcType=VARCHAR}
+            </if>
+            <if test="gassbill != null">
+                and gassbill = #{gassbill,jdbcType=VARCHAR}
+            </if>
+            <if test="property != null">
+                and Property = #{property,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="PropertyResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from property
+        where dormno in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="dormno" useGeneratedKeys="true" parameterType="dorm.demo.entity.Property">
+        insert into property
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="dormno != null">
+             dormno,
+          </if>
+          <if test="waterbill != null">
+             waterbill,
+          </if>
+          <if test="elcbill != null">
+             elcbill,
+          </if>
+          <if test="gassbill != null">
+             gassbill,
+          </if>
+          <if test="property != null">
+             Property,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="dormno != null">
+             #{dormno,jdbcType=VARCHAR},
+          </if>
+          <if test="waterbill != null">
+             #{waterbill,jdbcType=VARCHAR},
+          </if>
+          <if test="elcbill != null">
+             #{elcbill,jdbcType=VARCHAR},
+          </if>
+          <if test="gassbill != null">
+             #{gassbill,jdbcType=VARCHAR},
+          </if>
+          <if test="property != null">
+             #{property,jdbcType=VARCHAR},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=VARCHAR},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="dormno" useGeneratedKeys="true" parameterType="list">
+        insert into property
+         (dormno, waterbill, elcbill, gassbill, Property, status)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.dormno}, #{item.waterbill}, #{item.elcbill}, #{item.gassbill}, #{item.property}, #{item.status})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="dorm.demo.entity.Property">
+        update property
+        <set>
+            <if test="waterbill != null and waterbill != ''">
+                waterbill = #{waterbill,jdbcType=VARCHAR},
+            </if>
+            <if test="elcbill != null and elcbill != ''">
+                elcbill = #{elcbill,jdbcType=VARCHAR},
+            </if>
+            <if test="gassbill != null and gassbill != ''">
+                gassbill = #{gassbill,jdbcType=VARCHAR},
+            </if>
+            <if test="property != null and property != ''">
+                Property = #{property,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where dormno = #{dormno,jdbcType=VARCHAR}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update property
+        <set>
+            <if test="where.waterbill == null and set.waterbill != null and set.waterbill != ''">
+                waterbill = #{set.waterbill,jdbcType=VARCHAR},
+            </if>
+            <if test="where.elcbill == null and set.elcbill != null and set.elcbill != ''">
+                elcbill = #{set.elcbill,jdbcType=VARCHAR},
+            </if>
+            <if test="where.gassbill == null and set.gassbill != null and set.gassbill != ''">
+                gassbill = #{set.gassbill,jdbcType=VARCHAR},
+            </if>
+            <if test="where.property == null and set.property != null and set.property != ''">
+                Property = #{set.property,jdbcType=VARCHAR},
+            </if>
+            <if test="where.status == null and set.status != null and set.status != ''">
+                status = #{set.status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="where.dormno != null">
+                and dormno = #{where.dormno,jdbcType=VARCHAR}
+            </if>
+            <if test="where.waterbill != null">
+                and waterbill = #{where.waterbill,jdbcType=VARCHAR}
+            </if>
+            <if test="where.elcbill != null">
+                and elcbill = #{where.elcbill,jdbcType=VARCHAR}
+            </if>
+            <if test="where.gassbill != null">
+                and gassbill = #{where.gassbill,jdbcType=VARCHAR}
+            </if>
+            <if test="where.property != null">
+                and Property = #{where.property,jdbcType=VARCHAR}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update property
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="waterbill = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when dormno = #{item.dormno} then #{item.waterbill}
+                 </foreach>
+            </trim>
+            <trim prefix="elcbill = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when dormno = #{item.dormno} then #{item.elcbill}
+                 </foreach>
+            </trim>
+            <trim prefix="gassbill = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when dormno = #{item.dormno} then #{item.gassbill}
+                 </foreach>
+            </trim>
+            <trim prefix="Property = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when dormno = #{item.dormno} then #{item.property}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when dormno = #{item.dormno} then #{item.status}
+                 </foreach>
+            </trim>
+        </trim>
+        where dormno in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.dormno,jdbcType=VARCHAR}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.String">
+        delete from property where dormno = #{dormno,jdbcType=VARCHAR}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="dorm.demo.entity.Property">
+        delete from property
+        <where>
+            <if test="waterbill != null">
+                and waterbill = #{waterbill,jdbcType=VARCHAR}
+            </if>
+            <if test="elcbill != null">
+                and elcbill = #{elcbill,jdbcType=VARCHAR}
+            </if>
+            <if test="gassbill != null">
+                and gassbill = #{gassbill,jdbcType=VARCHAR}
+            </if>
+            <if test="property != null">
+                and Property = #{property,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from property where dormno in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(*) from property
+    </select>
+    
+    <select id="countByEntity" parameterType="dorm.demo.entity.Property" resultType="int">
+        select count(*) from property
+        <where>
+            <if test="dormno != null">
+                and dormno = #{dormno,jdbcType=VARCHAR}
+            </if>
+            <if test="waterbill != null">
+                and waterbill = #{waterbill,jdbcType=VARCHAR}
+            </if>
+            <if test="elcbill != null">
+                and elcbill = #{elcbill,jdbcType=VARCHAR}
+            </if>
+            <if test="gassbill != null">
+                and gassbill = #{gassbill,jdbcType=VARCHAR}
+            </if>
+            <if test="property != null">
+                and Property = #{property,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
